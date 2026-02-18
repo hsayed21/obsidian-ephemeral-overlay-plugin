@@ -1,11 +1,10 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
+	"id": "ephemeral-overlay",
+	"name": "Ephemeral Overlay",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"description": "Temporary drawing overlay for freehand annotations with mouse, touch, or Apple Pencil. Like ZoomIt or Epic Pen - nothing saved to disk.",
+	"author": "hsayed",
+	"authorUrl": "https://github.com/hsayed21",
 	"isDesktopOnly": false
 }

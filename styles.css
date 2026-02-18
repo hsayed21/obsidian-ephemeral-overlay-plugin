@@ -1,8 +1,140 @@
 /*
+ * EphemeralOverlay Plugin Styles
+ * 
+ * Styles for the drawing overlay, canvas, and mobile toolbar
+ */
 
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
+/* Overlay container - sits on top of Markdown view and blocks ALL interactions */
+.ephemeral-overlay {
+	position: absolute;
+	inset: 0;
+	z-index: 50;
+	pointer-events: auto; /* Capture all pointer events */
+	user-select: none; /* Prevent text selection */
+	-webkit-user-select: none; /* Safari/iOS */
+	-moz-user-select: none; /* Firefox */
+	-ms-user-select: none; /* IE/Edge */
+	touch-action: none; /* Prevent all touch gestures (scroll, zoom, selection) */
+	-webkit-touch-callout: none; /* Prevent iOS callout menu */
+}
 
-If your plugin does not need CSS, delete this file.
+/* Pen-only mode: Allow finger scrolling (pan gestures) while blocking pinch-zoom */
+.ephemeral-overlay.pen-only-mode {
+	touch-action: pan-x pan-y; /* Allow horizontal and vertical scrolling with finger */
+}
 
-*/
+/* Canvas element for drawing - fully blocks underlying content */
+.ephemeral-overlay-canvas {
+	width: 100%;
+	height: 100%;
+	touch-action: none; /* Prevent scrolling/zooming while drawing */
+	cursor: crosshair;
+	user-select: none; /* Prevent text selection */
+	-webkit-user-select: none; /* Safari/iOS */
+	pointer-events: auto; /* Ensure canvas captures all events */
+	/* Performance optimizations for iPad/Apple Pencil */
+	will-change: transform; /* GPU acceleration hint */
+}
+
+/* Pen-only mode canvas: Allow pan but only for touch (finger), pen events still blocked */
+.ephemeral-overlay.pen-only-mode .ephemeral-overlay-canvas {
+	touch-action: pan-x pan-y; /* Allow scrolling with finger */
+}
+
+/* Mobile toolbar - centered at bottom with safe area support */
+.ephemeral-toolbar {
+	position: absolute;
+	bottom: calc(env(safe-area-inset-bottom) + 16px);
+	left: 50%;
+	transform: translateX(-50%);
+	display: flex;
+	gap: 12px;
+	padding: 10px 14px;
+	background: rgba(30, 30, 30, 0.9);
+	border-radius: 12px;
+	backdrop-filter: blur(10px);
+	z-index: 100;
+	align-items: center;
+}
+
+/* Toolbar button groups */
+.ephemeral-toolbar-group {
+	display: flex;
+	gap: 6px;
+	align-items: center;
+}
+
+/* Toolbar buttons - touch-friendly sizing */
+.ephemeral-toolbar-btn {
+	border: none;
+	padding: 8px 12px;
+	border-radius: 6px;
+	color: black;
+	font-weight: bold;
+	font-size: 14px;
+	cursor: pointer;
+	min-width: 44px; /* Apple's recommended minimum touch target size */
+	min-height: 44px;
+	transition: all 0.2s ease;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.ephemeral-toolbar-btn:hover {
+	opacity: 0.8;
+	transform: translateY(-1px);
+}
+
+.ephemeral-toolbar-btn:active {
+	opacity: 0.6;
+	transform: translateY(0);
+}
+
+/* Width buttons */
+.ephemeral-width-btn {
+	background: #444 !important;
+	color: #fff !important;
+	position: relative;
+	border: 2px solid transparent;
+}
+
+.ephemeral-width-btn.is-active {
+	border-color: var(--interactive-accent);
+	background: #555 !important;
+}
+
+/* Width indicator (shows current pen width) */
+.ephemeral-width-indicator {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 40px;
+	height: 44px;
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 6px;
+	padding: 0 8px;
+}
+
+.ephemeral-width-dot {
+	background: #fff;
+	border-radius: 50%;
+	transition: all 0.2s ease;
+}
+
+/* Ribbon icon active state indicator */
+.side-dock-ribbon-action.is-active {
+	color: var(--interactive-accent);
+}
+
+/* Custom cursor - filled circle showing pen width */
+.ephemeral-cursor {
+	position: fixed;
+	border-radius: 50%;
+	pointer-events: none;
+	z-index: 9999;
+	transform: translate(-50%, -50%);
+	opacity: 0.7;
+	transition: width 0.1s ease, height 0.1s ease, background-color 0.2s ease;
+	border: 1px solid rgba(255, 255, 255, 0.5);
+	box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+}
+

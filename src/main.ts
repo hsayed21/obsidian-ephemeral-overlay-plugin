@@ -1,99 +1,97 @@
-import {App, Editor, MarkdownView, Modal, Notice, Plugin} from 'obsidian';
-import {DEFAULT_SETTINGS, MyPluginSettings, SampleSettingTab} from "./settings";
+import { MarkdownView, Plugin } from 'obsidian';
+import { DrawingOverlay } from './overlay';
+import { DEFAULT_SETTINGS, EphemeralOverlaySettingTab, PluginSettings } from './settings';
 
-// Remember to rename these classes and interfaces!
-
-export default class MyPlugin extends Plugin {
-	settings: MyPluginSettings;
+export default class EphemeralOverlayPlugin extends Plugin {
+	settings: PluginSettings;
+	private overlay: DrawingOverlay | null = null;
+	private ribbonIconEl: HTMLElement | null = null;
+	private statusBarItem: HTMLElement | null = null;
 
 	async onload() {
 		await this.loadSettings();
+		this.addSettingTab(new EphemeralOverlaySettingTab(this.app, this));
 
-		// This creates an icon in the left ribbon.
-		this.addRibbonIcon('dice', 'Sample', (evt: MouseEvent) => {
-			// Called when the user clicks the icon.
-			new Notice('This is a notice!');
+		this.statusBarItem = this.addStatusBarItem();
+		this.statusBarItem.setText('');
+		this.statusBarItem.hide();
+
+		this.ribbonIconEl = this.addRibbonIcon('pencil', 'Toggle Drawing Overlay', () => {
+			this.toggleOverlay();
 		});
 
-		// This adds a status bar item to the bottom of the app. Does not work on mobile apps.
-		const statusBarItemEl = this.addStatusBarItem();
-		statusBarItemEl.setText('Status bar text');
-
-		// This adds a simple command that can be triggered anywhere
 		this.addCommand({
-			id: 'open-modal-simple',
-			name: 'Open modal (simple)',
-			callback: () => {
-				new SampleModal(this.app).open();
-			}
-		});
-		// This adds an editor command that can perform some operation on the current editor instance
-		this.addCommand({
-			id: 'replace-selected',
-			name: 'Replace selected content',
-			editorCallback: (editor: Editor, view: MarkdownView) => {
-				editor.replaceSelection('Sample editor command');
-			}
-		});
-		// This adds a complex command that can check whether the current state of the app allows execution of the command
-		this.addCommand({
-			id: 'open-modal-complex',
-			name: 'Open modal (complex)',
-			checkCallback: (checking: boolean) => {
-				// Conditions to check
-				const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
-				if (markdownView) {
-					// If checking is true, we're simply "checking" if the command can be run.
-					// If checking is false, then we want to actually perform the operation.
-					if (!checking) {
-						new SampleModal(this.app).open();
-					}
-
-					// This command will only show up in Command Palette when the check function returns true
-					return true;
-				}
-				return false;
-			}
+			id: 'toggle-drawing-overlay',
+			name: 'Toggle Drawing Overlay',
+			callback: () => this.toggleOverlay(),
+			hotkeys: [{ modifiers: ['Ctrl', 'Shift'], key: 'D' }]
 		});
 
-		// This adds a settings tab so the user can configure various aspects of the plugin
-		this.addSettingTab(new SampleSettingTab(this.app, this));
+		this.registerEvent(
+			this.app.workspace.on('active-leaf-change', () => this.updateViewActionButton())
+		);
 
-		// If the plugin hooks up any global DOM events (on parts of the app that doesn't belong to this plugin)
-		// Using this function will automatically remove the event listener when this plugin is disabled.
-		this.registerDomEvent(document, 'click', (evt: MouseEvent) => {
-			new Notice("Click");
-		});
-
-		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
-		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
-
-	}
-
-	onunload() {
+		this.updateViewActionButton();
 	}
 
 	async loadSettings() {
-		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData() as Partial<MyPluginSettings>);
+		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
 	}
 
 	async saveSettings() {
 		await this.saveData(this.settings);
 	}
-}
 
-class SampleModal extends Modal {
-	constructor(app: App) {
-		super(app);
+	onunload() {
+		if (this.overlay) {
+			this.overlay.destroy();
+			this.overlay = null;
+		}
 	}
 
-	onOpen() {
-		let {contentEl} = this;
-		contentEl.setText('Woah!');
+	private toggleOverlay() {
+		if (this.overlay) {
+			this.disableOverlay();
+		} else {
+			this.enableOverlay();
+		}
 	}
 
-	onClose() {
-		const {contentEl} = this;
-		contentEl.empty();
+	private enableOverlay() {
+		const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
+		if (!markdownView) return;
+
+		this.overlay = new DrawingOverlay(
+			this.app,
+			markdownView,
+			this.settings,
+			this.statusBarItem,
+			() => this.disableOverlay()
+		);
+
+		this.ribbonIconEl?.addClass('is-active');
+		this.statusBarItem?.show();
+	}
+
+	private disableOverlay() {
+		if (this.overlay) {
+			this.overlay.destroy();
+			this.overlay = null;
+		}
+
+		this.statusBarItem?.hide();
+		this.ribbonIconEl?.removeClass('is-active');
+	}
+
+	private updateViewActionButton() {
+		const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
+		if (!markdownView) return;
+
+		const viewEl = markdownView.containerEl;
+		if (viewEl.querySelector('.view-actions .clickable-icon[aria-label="Toggle Drawing"]')) {
+			return;
+		}
+		
+		(markdownView as any).addAction('pen-tool', 'Toggle Drawing', () => this.toggleOverlay());
 	}
 }
