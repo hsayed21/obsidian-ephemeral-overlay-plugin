@@ -38,9 +38,8 @@ export class MobileToolbar {
 		const group = this.containerEl.createDiv({ cls: 'ephemeral-toolbar-group' });
 		WIDTH_OPTIONS.forEach(width => {
 			const btn = this.createButton(group, '━', 'ephemeral-width-btn');
-			btn.style.fontSize = `${8 + width * 2}px`;
-			btn.style.fontWeight = 'bold';
 			btn.dataset.width = String(width);
+			btn.dataset.widthSize = String(width); // For CSS sizing
 			
 			if (width === this.currentWidth) {
 				btn.addClass('is-active');
@@ -67,8 +66,7 @@ export class MobileToolbar {
 	private createColorButtons(): void {
 		const group = this.containerEl.createDiv({ cls: 'ephemeral-toolbar-group' });
 		COLOR_BUTTONS.forEach(({ label, color, hex }) => {
-			const btn = this.createButton(group, label);
-			btn.style.backgroundColor = hex;
+			const btn = this.createButton(group, label, `ephemeral-color-btn ephemeral-color-${color}`);
 			btn.addEventListener('click', (e) => {
 				e.stopPropagation();
 				this.onColorChange(color);
@@ -79,9 +77,6 @@ export class MobileToolbar {
 	private createFadeButton(): void {
 		const group = this.containerEl.createDiv({ cls: 'ephemeral-toolbar-group' });
 		this.fadeIndicator = this.createButton(group, '', 'ephemeral-fade-btn');
-		this.fadeIndicator.style.backgroundColor = '#555';
-		this.fadeIndicator.style.color = '#fff';
-		this.fadeIndicator.style.fontSize = '11px';
 		this.fadeIndicator.addEventListener('click', (e) => {
 			e.stopPropagation();
 			this.cycleFadeMode();
@@ -92,17 +87,13 @@ export class MobileToolbar {
 	private createActionButtons(): void {
 		const group = this.containerEl.createDiv({ cls: 'ephemeral-toolbar-group' });
 
-		const clearBtn = this.createButton(group, 'Clear');
-		clearBtn.style.backgroundColor = '#666';
-		clearBtn.style.color = '#fff';
+		const clearBtn = this.createButton(group, 'Clear', 'ephemeral-action-btn ephemeral-clear-btn');
 		clearBtn.addEventListener('click', (e) => {
 			e.stopPropagation();
 			this.onClear();
 		});
 
-		const exitBtn = this.createButton(group, 'Exit');
-		exitBtn.style.backgroundColor = '#999';
-		exitBtn.style.color = '#fff';
+		const exitBtn = this.createButton(group, 'Exit', 'ephemeral-action-btn ephemeral-exit-btn');
 		exitBtn.addEventListener('click', (e) => {
 			e.stopPropagation();
 			this.onExit();
@@ -118,19 +109,13 @@ export class MobileToolbar {
 			cls: classes.join(' ')
 		});
 		
-		if (!extraClass || !extraClass.includes('width')) {
-			btn.style.backgroundColor = '#444';
-			btn.style.color = '#fff';
-		}
-		
 		return btn;
 	}
 
 	private updateWidthIndicator(): void {
 		this.widthIndicator.empty();
 		const dot = this.widthIndicator.createDiv({ cls: 'ephemeral-width-dot' });
-		dot.style.width = `${this.currentWidth * 2}px`;
-		dot.style.height = `${this.currentWidth * 2}px`;
+		dot.dataset.width = String(this.currentWidth);
 	}
 
 	private cycleFadeMode(): void {

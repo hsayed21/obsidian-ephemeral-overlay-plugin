@@ -23,7 +23,10 @@ export class EphemeralOverlaySettingTab extends PluginSettingTab {
 		const { containerEl } = this;
 
 		containerEl.empty();
-		containerEl.createEl('h2', { text: 'Ephemeral Overlay Settings' });
+		
+		new Setting(containerEl)
+			.setName('Ephemeral Overlay Settings')
+			.setHeading();
 
 		new Setting(containerEl)
 			.setName('Pen Only Mode')

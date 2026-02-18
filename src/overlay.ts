@@ -486,7 +486,9 @@ export class DrawingOverlay {
 		const size = this.state.strokeWidth * 2;
 		this.cursorEl.style.width = `${size}px`;
 		this.cursorEl.style.height = `${size}px`;
-		this.cursorEl.style.backgroundColor = this.renderer.getContext().strokeStyle as string;
+		
+		this.cursorEl.dataset.color = this.state.currentColor;
+		this.cursorEl.className = `ephemeral-cursor ephemeral-cursor-${this.state.currentColor}`;
 	}
 
 	private updateStatusBar(): void {
