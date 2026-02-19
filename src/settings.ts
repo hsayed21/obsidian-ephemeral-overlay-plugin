@@ -25,10 +25,6 @@ export class EphemeralOverlaySettingTab extends PluginSettingTab {
 		containerEl.empty();
 
 		new Setting(containerEl)
-			.setName('General')
-			.setHeading();
-
-		new Setting(containerEl)
 			.setName('Pen only mode')
 			.setDesc('Only allow drawing with stylus/pen input (e.g., Apple Pencil). When enabled, you can draw with your pen and scroll with your finger simultaneously - perfect for iPad! Finger touches will not draw, only scroll the page. Note: If using an iPad, disable the Apple Pencil "Scribble" setting in iPadOS settings for a better experience.')
 			.addToggle(toggle => toggle
