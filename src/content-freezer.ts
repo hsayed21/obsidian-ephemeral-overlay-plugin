@@ -1,19 +1,14 @@
-import { INTERACTIVE_SELECTORS } from './constants';
+import { FROZEN_CLASS, INTERACTIVE_SELECTORS } from './constants';
+
 
 export class ContentFreezer {
 	private applyFreezeStyles(element: HTMLElement): void {
-		element.style.pointerEvents = 'none';
-		element.style.userSelect = 'none';
-		element.style.webkitUserSelect = 'none';
-		(element.style as any).webkitTouchCallout = 'none';
+		element.addClass(FROZEN_CLASS);
 		element.dataset.ephemeralFrozen = 'true';
 	}
 
 	private removeFreezeStyles(element: HTMLElement): void {
-		element.style.pointerEvents = '';
-		element.style.userSelect = '';
-		element.style.webkitUserSelect = '';
-		(element.style as any).webkitTouchCallout = '';
+		element.removeClass(FROZEN_CLASS);
 		delete element.dataset.ephemeralFrozen;
 	}
 

@@ -1,4 +1,4 @@
-import { Stroke, FadeMode } from './types';
+import { Stroke, FadeMode, Point, DrawingColor } from './types';
 import { FADE_DURATIONS } from './constants';
 import { CanvasRenderer } from './canvas-renderer';
 
@@ -9,7 +9,7 @@ export class FadeAnimator {
 		private renderer: CanvasRenderer,
 		private getStrokes: () => Stroke[],
 		private setStrokes: (strokes: Stroke[]) => void,
-		private getCurrentStroke: () => { points: any[]; color: any; width: number },
+		private getCurrentStroke: () => { points: Point[]; color: DrawingColor; width: number },
 		private isDrawing: () => boolean
 	) {}
 

@@ -2,6 +2,10 @@ import { MarkdownView, Plugin } from 'obsidian';
 import { DrawingOverlay } from './overlay';
 import { DEFAULT_SETTINGS, EphemeralOverlaySettingTab, PluginSettings } from './settings';
 
+interface MarkdownViewWithActions extends MarkdownView {
+	addAction(icon: string, title: string, callback: (evt: MouseEvent) => void): HTMLElement;
+}
+
 export default class EphemeralOverlayPlugin extends Plugin {
 	settings: PluginSettings;
 	private overlay: DrawingOverlay | null = null;
@@ -16,13 +20,13 @@ export default class EphemeralOverlayPlugin extends Plugin {
 		this.statusBarItem.setText('');
 		this.statusBarItem.hide();
 
-		this.ribbonIconEl = this.addRibbonIcon('pencil', 'Toggle Drawing Overlay', () => {
+		this.ribbonIconEl = this.addRibbonIcon('pencil', 'Toggle drawing overlay', () => {
 			this.toggleOverlay();
 		});
 
 		this.addCommand({
 			id: 'toggle-drawing-overlay',
-			name: 'Toggle Drawing Overlay',
+			name: 'Toggle drawing overlay',
 			callback: () => this.toggleOverlay()
 			// hotkeys: [{ modifiers: ['Ctrl', 'Shift'], key: 'D' }]
 		});
@@ -88,10 +92,10 @@ export default class EphemeralOverlayPlugin extends Plugin {
 		if (!markdownView) return;
 
 		const viewEl = markdownView.containerEl;
-		if (viewEl.querySelector('.view-actions .clickable-icon[aria-label="Toggle Drawing"]')) {
+		if (viewEl.querySelector('.view-actions .clickable-icon[aria-label="Toggle drawing"]')) {
 			return;
 		}
-		
-		(markdownView as any).addAction('pen-tool', 'Toggle Drawing', () => this.toggleOverlay());
+
+		(markdownView as MarkdownViewWithActions).addAction('pen-tool', 'Toggle drawing', () => this.toggleOverlay());
 	}
 }

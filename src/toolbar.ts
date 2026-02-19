@@ -18,8 +18,7 @@ export class MobileToolbar {
 		private onFadeModeChange?: (mode: FadeMode) => void
 	) {
 		this.currentWidth = initialWidth;
-		this.containerEl = parentEl.createDiv({ cls: 'ephemeral-toolbar' });
-		this.containerEl.style.pointerEvents = 'auto';
+		this.containerEl = parentEl.createDiv({ cls: 'ephemeral-toolbar ephemeral-pointer-events-auto' });
 		this.widthIndicator = this.containerEl.createDiv({ cls: 'ephemeral-width-indicator' });
 		this.createAllButtons();
 		this.updateWidthIndicator();

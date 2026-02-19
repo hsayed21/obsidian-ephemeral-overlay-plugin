@@ -121,16 +121,16 @@ export class DrawingOverlay {
 	private createOverlay(): void {
 		const contentEl = this.markdownView.contentEl;
 		this.overlayEl = contentEl.createDiv({ cls: 'ephemeral-overlay' });
-		
+
 		if (this.settings.penOnlyMode) {
 			this.overlayEl.addClass('pen-only-mode');
-			this.overlayEl.style.pointerEvents = 'none';
+			this.overlayEl.addClass('ephemeral-pointer-events-none');
 		}
 
 		this.canvas = this.overlayEl.createEl('canvas', { cls: 'ephemeral-overlay-canvas' });
-		
+
 		if (this.settings.penOnlyMode) {
-			this.canvas.style.pointerEvents = 'none';
+			this.canvas.addClass('ephemeral-pointer-events-none');
 		}
 	}
 
@@ -158,21 +158,25 @@ export class DrawingOverlay {
 
 	private enableCanvasForDrawing(): void {
 		if (!this.settings.penOnlyMode) return;
-		
-		this.canvas.style.pointerEvents = 'auto';
-		this.overlayEl.style.pointerEvents = 'auto';
+
+		this.canvas.removeClass('ephemeral-pointer-events-none');
+		this.canvas.addClass('ephemeral-pointer-events-auto');
+		this.overlayEl.removeClass('ephemeral-pointer-events-none');
+		this.overlayEl.addClass('ephemeral-pointer-events-auto');
 		this.contentFreezer.freeze(this.markdownView.contentEl);
 	}
 
 	private disableCanvasForDrawing(): void {
 		if (!this.settings.penOnlyMode) return;
-		
+
 		if (this.settings.clearOnScroll) {
 			this.clearCanvas();
 		}
-		
-		this.canvas.style.pointerEvents = 'none';
-		this.overlayEl.style.pointerEvents = 'none';
+
+		this.canvas.removeClass('ephemeral-pointer-events-auto');
+		this.canvas.addClass('ephemeral-pointer-events-none');
+		this.overlayEl.removeClass('ephemeral-pointer-events-auto');
+		this.overlayEl.addClass('ephemeral-pointer-events-none');
 		this.contentFreezer.unfreeze(this.markdownView.contentEl);
 	}
 
@@ -206,7 +210,7 @@ export class DrawingOverlay {
 		this.canvas.removeEventListener('selectstart', this.boundHandlers.selectStart);
 		
 		const target = this.settings.penOnlyMode ? this.markdownView.contentEl : this.canvas;
-		const options = this.settings.penOnlyMode ? { capture: true } as any : undefined;
+		const options: AddEventListenerOptions | undefined = this.settings.penOnlyMode ? { capture: true } : undefined;
 		target.removeEventListener('pointerdown', this.boundHandlers.pointerDown, options);
 		
 		document.removeEventListener('pointermove', this.boundHandlers.pointerMove);
@@ -247,7 +251,7 @@ export class DrawingOverlay {
 		this.pointerTracker.setActivePointer(e.pointerId);
 
 		if (this.cursorEl) {
-			this.cursorEl.style.display = 'none';
+			this.cursorEl.addClass('ephemeral-display-none');
 		}
 
 		this.canvas.setPointerCapture(e.pointerId);
@@ -341,7 +345,7 @@ export class DrawingOverlay {
 		}
 
 		if (this.cursorEl) {
-			this.cursorEl.style.display = 'block';
+			this.cursorEl.removeClass('ephemeral-display-none');
 		}
 
 		if (this.canvas.hasPointerCapture(e.pointerId)) {
@@ -475,7 +479,7 @@ export class DrawingOverlay {
 	}
 
 	private createCustomCursor(): void {
-		this.canvas.style.cursor = 'none';
+		this.canvas.addClass('ephemeral-cursor-none');
 		this.cursorEl = document.body.createDiv({ cls: 'ephemeral-cursor' });
 		this.updateCustomCursor();
 	}

@@ -1,8 +1,36 @@
 /*
  * EphemeralOverlay Plugin Styles
- * 
+ *
  * Styles for the drawing overlay, canvas, and mobile toolbar
  */
+
+/* Utility classes for dynamic state changes */
+.ephemeral-pointer-events-none {
+	pointer-events: none;
+}
+
+.ephemeral-pointer-events-auto {
+	pointer-events: auto;
+}
+
+.ephemeral-display-none {
+	display: none;
+}
+
+.ephemeral-display-block {
+	display: block;
+}
+
+.ephemeral-cursor-none {
+	cursor: none;
+}
+
+/* Frozen content state - applied to prevent interactions */
+.ephemeral-frozen {
+	pointer-events: none;
+	user-select: none;
+	-webkit-touch-callout: none;
+}
 
 /* Overlay container - sits on top of Markdown view and blocks ALL interactions */
 .ephemeral-overlay {

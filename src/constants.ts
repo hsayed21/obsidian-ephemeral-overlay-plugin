@@ -56,3 +56,7 @@ export const COLOR_BUTTONS: Array<{ label: string; color: DrawingColor; hex: str
 	{ label: 'O', color: 'orange', hex: COLOR_MAP.orange },
 	{ label: 'P', color: 'pink', hex: COLOR_MAP.pink },
 ];
+
+
+export const FROZEN_CLASS = 'ephemeral-frozen';
+
